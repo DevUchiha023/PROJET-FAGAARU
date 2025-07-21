@@ -1,13 +1,13 @@
-import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Pressable, useColorScheme } from 'react-native';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import Colors from '../../constants/Colors';
+import { useAppTheme } from '../../contexts/ThemeContext';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
+/**
+ * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
+ */
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
@@ -17,69 +17,40 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { theme } = useAppTheme();
+
+  // Vérification de sécurité pour le thème
+  const safeTheme = theme || {
+    colors: {
+      primary: '#007AFF',
+      textSecondary: '#6C757D',
+      card: '#FFFFFF',
+      border: '#E9ECEF',
+      background: '#F8F9FA',
+      text: '#000000',
+    }
+  };
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        tabBarActiveTintColor: safeTheme.colors.primary,
+        tabBarInactiveTintColor: safeTheme.colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: safeTheme.colors.card,
+          borderTopColor: safeTheme.colors.border,
+        },
+        headerStyle: {
+          backgroundColor: safeTheme.colors.background,
+        },
+        headerTintColor: safeTheme.colors.text,
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Signes Vitaux',
-          tabBarIcon: ({ color }) => <TabBarIcon name="heartbeat" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="scan"
-        options={{
-          title: 'Scan IA',
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="teleconsultation"
-        options={{
-          title: 'Consultation',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user-md" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="pharmacy"
-        options={{
-          title: 'Pharmacie',
-          tabBarIcon: ({ color }) => <TabBarIcon name="medkit" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="geolocation"
-        options={{
-          title: 'Géolocalisation',
-          tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'Historique',
-          tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
+          title: 'Accueil',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -87,13 +58,23 @@ export default function TabLayout() {
         options={{
           title: 'Notifications',
           tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="user"
+        name="account"
         options={{
           title: 'Compte',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="accessibility"
+        options={{
+          title: 'Accessibilité',
+          tabBarIcon: ({ color }) => <TabBarIcon name="universal-access" color={color} />,
+          headerShown: false,
         }}
       />
     </Tabs>
